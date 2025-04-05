@@ -5,22 +5,23 @@
 
 🌍 Overview
 
-Sunwatt is a decentralized platform for community investment in solar energy.
-Citizens and investors fund solar installations and receive SUNX tokens in return.
-Each SUNX token represents a fractional share in one or more Sunwatt solar projects and gives access to ongoing revenue from the sale of electricity to the national power grid.
+- Sunwatt is a decentralized platform for community investment in solar energy.
+- Citizens and investors fund solar installations and receive SUNX tokens in return.
+- Each SUNX token represents a fractional share in one or more Sunwatt solar projects and gives access to ongoing revenue from the sale of electricity to the national power grid.
 
 ⸻
 
 🪙 The SUNX Token
 
-Attribute	Description
-Token Name	SUNX
-Blockchain	XRP Ledger (XRPL)
-Token Type	Issued Currency (XRPL native token)
-Supply	Defined per project (e.g., 30,000 SUNX for a €300,000 installation)
-Initial Value	Fixed at issuance (e.g., 1 SUNX = €10)
-Ownership	1 SUNX = 1 / total project share
-Utility	Digital proof of ownership + share in revenue
+| Attribute	| Description| 
+|----|----|
+| Token Name|	SUNX|
+|Blockchain|	XRP Ledger (XRPL)|
+|Token Type|	Issued Currency (XRPL native token)|
+|Supply|	Defined per project (e.g., 30,000 SUNX for a €300,000 installation)|
+|Initial Value|	Fixed at issuance (e.g., 1 SUNX = €10)|
+|Ownership|	1 SUNX = 1 / total project share|
+|Utility	Digital proof of ownership + share in revenue|
 
 
 
@@ -29,11 +30,11 @@ Utility	Digital proof of ownership + share in revenue
 💸 Revenue & Distribution Model
 
 🔁 How it works:
-	1.	A Sunwatt solar installation produces electricity.
-	2.	All electricity is sold to the national power grid (e.g., EDF OA in France) at a guaranteed feed-in tariff (e.g., €0.10/kWh for 20 years).
-	3.	The revenue (paid in €) is:
-	•	Converted to XRP (or a stablecoin) via a crypto exchange.
-	•	Distributed proportionally to SUNX token holders based on their share.
+1.	A Sunwatt solar installation produces electricity.
+2.	All electricity is sold to the national power grid (e.g., EDF OA in France) at a guaranteed feed-in tariff (e.g., €0.10/kWh for 20 years).
+3.	The revenue (paid in €) is:
+  - Converted to XRP (or a stablecoin) via a crypto exchange.
+  - Distributed proportionally to SUNX token holders based on their share.
 
 Example:
 €1,000 in revenue → converted → 1,300 XRP → distributed among holders.
