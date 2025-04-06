@@ -3,7 +3,7 @@
 ------ 
 
 **How to test the app**
-1. Create a python environment (Conda, Venev) and install the `requirements.txt`
+1. Create a python environment (Conda, venv) and install the `requirements.txt`
 2. Run the Flask app: `python solar_crowdfunding.py`
 3. Once running, run the Streamlit app: `streamlit run app.py`
 
