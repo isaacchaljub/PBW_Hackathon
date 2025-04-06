@@ -1,17 +1,19 @@
 # PBW_Hackathon
-Sunwatt – Tokenized Solar Projects Powered by SUNX
+**Sunwatt – Tokenized Solar Projects Powered by SUNX**
+
 
 ⸻
 
-Overview
+**Overview**
 
 - Sunwatt is a decentralized platform for community investment in solar energy.
 - Citizens and investors fund solar installations and receive SUNX tokens in return.
 - Each SUNX token represents a fractional share in one or more Sunwatt solar projects and gives access to ongoing revenue from the sale of electricity to the national power grid.
 
+
 ⸻
 
-The SUNX Token
+**The SUNX Token**
 
 | Attribute	| Description| 
 |----|----|
@@ -25,9 +27,10 @@ The SUNX Token
 
 
 
+
 ⸻
 
-Revenue & Distribution Model
+**Revenue & Distribution Model**
 
 How it works:
 1.	A Sunwatt solar installation produces electricity.
@@ -39,9 +42,10 @@ How it works:
 Example:
 €1,000 in revenue → converted → 1,300 XRP → distributed among holders.
 
+
 ⸻
 
-Ownership and Transparency
+**Ownership and Transparency**
 	•	SUNX tokens act as on-chain certificates of ownership.
 	•	Fully transferable (or optionally restricted).
 	•	Blockchain guarantees:
@@ -50,9 +54,10 @@ Ownership and Transparency
 	•	What share of the revenue they’re entitled to
 	•	Can be tracked through a public explorer or custom dashboard.
 
+
 ⸻
 
-Example Project Breakdown
+**Example Project Breakdown**
 
 Attribute	Value
 Project Cost	€300,000
@@ -68,7 +73,7 @@ ROI	~12% gross annually (if 1 SUNX = €10)
 
 ⸻
 
-Infrastructure Stack
+**Infrastructure Stack**
 
 Function	Tool / Platform
 Token issuance	XRPL Issued Currency
@@ -82,7 +87,7 @@ Legal anchoring	Off-chain contract (PDF or digital doc) linking token to real-wo
 
 ⸻
 
-SUNX Token Utility
+**SUNX Token Utility**
 	•	Receive monthly or quarterly energy revenue (in XRP or stablecoin)
 	•	Governance: vote on reinvestment, upgrades, or new projects
 	•	Access to future Sunwatt initiatives (whitelisting, bonus yield)
@@ -91,7 +96,7 @@ SUNX Token Utility
 
 ⸻
 
-Why SUNX Works
+**Why SUNX Works**
 
 Benefit	Explanation
 Passive income	Direct share in electricity sales
