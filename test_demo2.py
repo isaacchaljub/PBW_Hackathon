@@ -16,7 +16,7 @@ def print_response(response):
 
 def create_projects():
     """
-    Create 3 projects with a share price of 0.0001 XRP.
+    Create 3 projects with different share prices.
     Returns a list of created project details.
     """
     projects = []
@@ -55,26 +55,22 @@ def create_projects():
         time.sleep(5)  # Wait a bit between project creations
     return projects
 
-def invest_by_investor(project_id, investor_id, shares_amount):
+def invest_by_investor(project_name, investor_id, shares_amount):
     """
     Simulate an investment in a project by a specific investor.
     
     Parameters:
-      - project_id: The project to invest in.
+      - project_name: The name of the project to invest in.
       - investor_id: A unique identifier for the investor (or their name).
       - shares_amount: Number of shares to buy.
       
     Returns a dictionary with the investment details (including the buyer wallet address).
-    
-    Note: Although the API endpoint /buy_shares doesn't process an investor_id,
-          we pass it along so that you can map the returned buyer wallet address to the investor.
     """
     payload = {
-       "project_id": project_id,
-       "shares_amount": shares_amount,
-       "investor_id": investor_id  # extra field to track investor locally
+       "name": project_name,
+       "shares_amount": shares_amount
     }
-    print(f"\nInvestor {investor_id} investing in project {project_id}")
+    print(f"\nInvestor {investor_id} investing in project {project_name}")
     response = requests.post(f"{BASE_URL}/buy_shares", json=payload)
     print_response(response)
     if response.status_code == 200:
@@ -83,7 +79,7 @@ def invest_by_investor(project_id, investor_id, shares_amount):
         return investment
     return None
 
-def distribute_dividends_for_project(project_id, dividend_rate=0.1):
+def distribute_dividends_for_project(project_name, dividend_rate=0.1):
     """
     Distribute dividends for a given project.
     
@@ -94,28 +90,28 @@ def distribute_dividends_for_project(project_id, dividend_rate=0.1):
     Returns the JSON response from the dividend distribution endpoint.
     """
     # Retrieve project info first
-    project_info = get_project_info(project_id)
+    project_info = get_project_info(project_name)
     share_price = project_info.get("project", {}).get("share_price_xrp", 0)
     total_shares = sum(sh.get("shares_amount", 0) for sh in project_info.get("shareholders", []))
     total_invested = total_shares * share_price
     total_dividend = total_invested * dividend_rate
-    print(f"\nProject {project_id} total invested: {total_invested} XRP")
+    print(f"\nProject {project_name} total invested: {total_invested} XRP")
     print(f"Distributing dividends at {dividend_rate*100}% => Total dividend: {total_dividend} XRP")
     dividend_payload = {
-         "project_id": project_id,
+         "name": project_name,
          "total_dividend_xrp": total_dividend
     }
     response = requests.post(f"{BASE_URL}/distribute_dividends", json=dividend_payload)
     print_response(response)
     return response.json()
 
-def get_project_info(project_id):
+def get_project_info(project_name):
     """
     Retrieve detailed information for a project, including its shareholders and dividend history.
     Returns the JSON response.
     """
-    print(f"\nRetrieving info for project {project_id}")
-    response = requests.get(f"{BASE_URL}/project/{project_id}")
+    print(f"\nRetrieving info for project {project_name}")
+    response = requests.get(f"{BASE_URL}/project/{project_name}")
     print_response(response)
     return response.json()
 
@@ -131,23 +127,24 @@ def demo_investments(projects):
     """
     For each project, simulate investments by specific investors.
     We'll simulate 12 investors in total (4 per project).
-    Returns a mapping of project_id to a list of investment details.
+    Returns a mapping of project name to a list of investment details.
     """
     all_investments = {}
     # Predefine a list of 12 investor IDs
     investor_ids = [f"INV{i+1}" for i in range(12)]
     for i, project in enumerate(projects):
-        project_id = project["project_id"]
-        print(f"\n--- Investments for Project {project_id} ---")
+        project_name = project["name"]
+        print(f"\n--- Investments for Project {project_name} ---")
         investments = []
         # Assign 4 investors per project
         for investor_id in investor_ids[i*4:(i*4)+4]:
-            inv_response = invest_by_investor(project_id, investor_id, shares_amount=random.randint(50,200))
+            # Reduced share amount to ensure we stay within faucet funding limits
+            inv_response = invest_by_investor(project_name, investor_id, shares_amount=random.randint(30,100))
             time.sleep(3)
             if inv_response:
                 investments.append(inv_response)
             time.sleep(2)
-        all_investments[project_id] = investments
+        all_investments[project_name] = investments
     print("\nAll Investments:")
     print(json.dumps(all_investments, indent=2))
     return all_investments
@@ -156,14 +153,14 @@ def demo_distribute_dividends(projects):
     """
     For each project, distribute dividends.
     This function uses a 10% dividend rate based on the total invested amount.
-    Returns a mapping of project_id to the dividend distribution results.
+    Returns a mapping of project name to the dividend distribution results.
     """
     all_dividends = {}
     for project in projects:
-        project_id = project["project_id"]
-        print(f"\n--- Distributing Dividends for Project {project_id} ---")
-        div_result = distribute_dividends_for_project(project_id, dividend_rate=0.1)
-        all_dividends[project_id] = div_result
+        project_name = project["name"]
+        print(f"\n--- Distributing Dividends for Project {project_name} ---")
+        div_result = distribute_dividends_for_project(project_name, dividend_rate=0.1)
+        all_dividends[project_name] = div_result
         time.sleep(5)
     print("\nDividend Distribution Results:")
     print(json.dumps(all_dividends, indent=2))
@@ -174,43 +171,42 @@ def demo_get_all_info(projects):
     Retrieve and print the final info for each project.
     """
     for project in projects:
-        project_id = project["project_id"]
-        info = get_project_info(project_id)
-        print(f"\nFinal info for project {project_id}:")
+        project_name = project["name"]
+        info = get_project_info(project_name)
+        print(f"\nFinal info for project {project_name}:")
         print(json.dumps(info, indent=2))
     return
 
-# --- If running as a script, you can choose which functions to call ---
-if __name__ == "__main__":
-    # Uncomment the function(s) you want to run separately.
-    
-    # 1. Create projects:
-    # projects = demo_create_projects()
-
-    # 1. Create projects:
+def load_projects_from_db():
+    """Load existing projects from the database."""
     projects = []
     conn = sqlite3.connect('solar_crowdfunding.db')
     c = conn.cursor()
-    c.execute('SELECT id, name, description, location, total_power_kw, total_shares, share_price_xrp, wallet_address FROM projects')
+    c.execute('SELECT name, description, location, total_power_kw, total_shares, share_price_xrp, wallet_address FROM projects')
     rows = c.fetchall()
     for row in rows:
         projects.append({
-            "project_id": row[0],
-            "name": row[1], 
-            "description": row[2],
-            "location": row[3],
-            "total_power_kw": row[4],
-            "total_shares": row[5],
-            "share_price_xrp": row[6],
-            "wallet_address": row[7]
+            "name": row[0],
+            "description": row[1],
+            "location": row[2],
+            "total_power_kw": row[3],
+            "total_shares": row[4],
+            "share_price_xrp": row[5],
+            "wallet_address": row[6]
         })
     conn.close()
+    return projects
+
+if __name__ == "__main__":
+    # Choose one of these options:
     
-    # 2. Invest in each project (by investor):
+    # Option 1: Create new projects and run the demo
+    projects = demo_create_projects()
+    
+    # Option 2: Load existing projects from database
+    # projects = load_projects_from_db()
+    
+    # Run the rest of the demo
     investments = demo_investments(projects)
-    
-    # 3. Distribute dividends for each project:
     dividends = demo_distribute_dividends(projects)
-    
-    # 4. Retrieve final info for each project:
     demo_get_all_info(projects)

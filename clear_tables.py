@@ -8,7 +8,7 @@ def clear_tables():
     # Clear tables in the correct order to respect foreign key constraints
     c.execute('DELETE FROM dividends')
     c.execute('DELETE FROM shareholders')
-    #c.execute('DELETE FROM projects')
+    c.execute('DELETE FROM projects')
     
     conn.commit()
     conn.close()
