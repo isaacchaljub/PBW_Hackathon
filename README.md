@@ -1,17 +1,19 @@
 # PBW_Hackathon
-☀️ Sunwatt – Tokenized Solar Projects Powered by SUNX
+**Sunwatt – Tokenized Solar Projects Powered by SUNX**
+
 
 ⸻
 
-🌍 Overview
+**Overview**
 
 - Sunwatt is a decentralized platform for community investment in solar energy.
 - Citizens and investors fund solar installations and receive SUNX tokens in return.
 - Each SUNX token represents a fractional share in one or more Sunwatt solar projects and gives access to ongoing revenue from the sale of electricity to the national power grid.
 
+
 ⸻
 
-🪙 The SUNX Token
+**The SUNX Token**
 
 | Attribute	| Description| 
 |----|----|
@@ -20,14 +22,17 @@
 |Token Type|	Issued Currency (XRPL native token)|
 |Supply|	Defined per project (e.g., 30,000 SUNX for a €300,000 installation)|
 |Initial Value|	Fixed at issuance (e.g., 1 SUNX = €10)|
-|Ownership    |	1 SUNX = 1 per total project share|
-|Utility|	Digital proof of ownership + share in revenue|
+|Ownership|	1 SUNX = 1 / total project share|
+|Utility	Digital proof of ownership + share in revenue|
+
+
+
 
 ⸻
 
-💸 Revenue & Distribution Model
+**Revenue & Distribution Model**
 
-🔁 How it works:
+How it works:
 1.	A Sunwatt solar installation produces electricity.
 2.	All electricity is sold to the national power grid (e.g., EDF OA in France) at a guaranteed feed-in tariff (e.g., €0.10/kWh for 20 years).
 3.	The revenue (paid in €) is:
@@ -37,9 +42,10 @@
 Example:
 €1,000 in revenue → converted → 1,300 XRP → distributed among holders.
 
+
 ⸻
 
-🔐 Ownership and Transparency
+**Ownership and Transparency**
 - SUNX tokens act as on-chain certificates of ownership.
 - Fully transferable (or optionally restricted).
 - Blockchain guarantees:
@@ -48,9 +54,10 @@ Example:
   - What share of the revenue they’re entitled to
   - Can be tracked through a public explorer or custom dashboard.
 
+
 ⸻
 
-📊 Example Project Breakdown
+**Example Project Breakdown**
 
 |Attribute|	Value|
 |----|----|
@@ -65,7 +72,7 @@ Example:
 
 ⸻
 
-🔧 Infrastructure Stack
+**Infrastructure Stack**
 
 | Function|	Tool / Platform|
 |----|----|
@@ -78,20 +85,20 @@ Example:
 
 ⸻
 
-🧩 SUNX Token Utility
-	•	💸 Receive monthly or quarterly energy revenue (in XRP or stablecoin)
-	•	🗳️ Governance: vote on reinvestment, upgrades, or new projects
-	•	🌱 Access to future Sunwatt initiatives (whitelisting, bonus yield)
-	•	🔁 Trade SUNX tokens on XRPL’s decentralized exchange
-	•	🎖️ Digital green ownership badge (traceable & verifiable)
+**SUNX Token Utility**
+	•	Receive monthly or quarterly energy revenue (in XRP or stablecoin)
+	•	Governance: vote on reinvestment, upgrades, or new projects
+	•	Access to future Sunwatt initiatives (whitelisting, bonus yield)
+	•	Trade SUNX tokens on XRPL’s decentralized exchange
+	•	Digital green ownership badge (traceable & verifiable)
 
 ⸻
 
-📈 Why SUNX Works
+**Why SUNX Works**
 
 Benefit	Explanation
-✅ Passive income	Direct share in electricity sales
-✅ Real asset backing	Linked to physical solar projects
-✅ Transparent	Ownership & payments are fully traceable
-✅ Simple & scalable	Easy onboarding, fast payments via XRPL
-✅ Eco-friendly & inclusive	Supports the energy transition & citizen participation
+Passive income	Direct share in electricity sales
+Real asset backing	Linked to physical solar projects
+Transparent	Ownership & payments are fully traceable
+Simple & scalable	Easy onboarding, fast payments via XRPL
+Eco-friendly & inclusive	Supports the energy transition & citizen participation
