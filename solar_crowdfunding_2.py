@@ -375,6 +375,38 @@ def get_project(project_id):
         print(f"Error in get_project: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route("/get_all_project_info", methods=["GET"])
+def get_all_project_info():
+    """
+    Retrieve all information about projects, shareholders, and dividends from the database.
+    Returns a dictionary with all the information.
+    """
+    conn = sqlite3.connect('solar_crowdfunding.db')
+    c = conn.cursor()
+    
+    # Get all projects
+    c.execute('''
+        SELECT * FROM projects
+    ''')
+    projects = []
+    for row in c.fetchall():
+        project = {
+            "project_id": row[0],
+            "name": row[1],
+            "description": row[2],
+            "location": row[3],
+            "total_power_kw": row[4],
+            "total_shares": row[5],
+            "share_price_xrp": row[6],
+            "wallet_address": row[7],
+            "status": row[8],
+            "created_at": row[9]
+        }
+        projects.append(project)
+
+    conn.close()
+    return projects
+
 if __name__ == "__main__":
     ensure_client()
     app.run(debug=True)
