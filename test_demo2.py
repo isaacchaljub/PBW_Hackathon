@@ -1,6 +1,8 @@
 import requests
 import json
 import time
+import sqlite3
+import random
 
 BASE_URL = "http://localhost:5000"
 
@@ -140,7 +142,8 @@ def demo_investments(projects):
         investments = []
         # Assign 4 investors per project
         for investor_id in investor_ids[i*4:(i*4)+4]:
-            inv_response = invest_by_investor(project_id, investor_id, shares_amount=10)
+            inv_response = invest_by_investor(project_id, investor_id, shares_amount=random.randint(50,200))
+            time.sleep(3)
             if inv_response:
                 investments.append(inv_response)
             time.sleep(2)
@@ -161,7 +164,7 @@ def demo_distribute_dividends(projects):
         print(f"\n--- Distributing Dividends for Project {project_id} ---")
         div_result = distribute_dividends_for_project(project_id, dividend_rate=0.1)
         all_dividends[project_id] = div_result
-        time.sleep(2)
+        time.sleep(5)
     print("\nDividend Distribution Results:")
     print(json.dumps(all_dividends, indent=2))
     return all_dividends
@@ -182,7 +185,26 @@ if __name__ == "__main__":
     # Uncomment the function(s) you want to run separately.
     
     # 1. Create projects:
-    projects = demo_create_projects()
+    # projects = demo_create_projects()
+
+    # 1. Create projects:
+    projects = []
+    conn = sqlite3.connect('solar_crowdfunding.db')
+    c = conn.cursor()
+    c.execute('SELECT id, name, description, location, total_power_kw, total_shares, share_price_xrp, wallet_address FROM projects')
+    rows = c.fetchall()
+    for row in rows:
+        projects.append({
+            "project_id": row[0],
+            "name": row[1], 
+            "description": row[2],
+            "location": row[3],
+            "total_power_kw": row[4],
+            "total_shares": row[5],
+            "share_price_xrp": row[6],
+            "wallet_address": row[7]
+        })
+    conn.close()
     
     # 2. Invest in each project (by investor):
     investments = demo_investments(projects)
