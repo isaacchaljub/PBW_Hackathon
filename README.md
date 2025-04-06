@@ -1,9 +1,9 @@
 # PBW_Hackathon
-☀️ Sunwatt – Tokenized Solar Projects Powered by SUNX
+Sunwatt – Tokenized Solar Projects Powered by SUNX
 
 ⸻
 
-🌍 Overview
+Overview
 
 - Sunwatt is a decentralized platform for community investment in solar energy.
 - Citizens and investors fund solar installations and receive SUNX tokens in return.
@@ -11,7 +11,7 @@
 
 ⸻
 
-🪙 The SUNX Token
+The SUNX Token
 
 | Attribute	| Description| 
 |----|----|
@@ -27,9 +27,9 @@
 
 ⸻
 
-💸 Revenue & Distribution Model
+Revenue & Distribution Model
 
-🔁 How it works:
+How it works:
 1.	A Sunwatt solar installation produces electricity.
 2.	All electricity is sold to the national power grid (e.g., EDF OA in France) at a guaranteed feed-in tariff (e.g., €0.10/kWh for 20 years).
 3.	The revenue (paid in €) is:
@@ -41,7 +41,7 @@ Example:
 
 ⸻
 
-🔐 Ownership and Transparency
+Ownership and Transparency
 	•	SUNX tokens act as on-chain certificates of ownership.
 	•	Fully transferable (or optionally restricted).
 	•	Blockchain guarantees:
@@ -52,7 +52,7 @@ Example:
 
 ⸻
 
-📊 Example Project Breakdown
+Example Project Breakdown
 
 Attribute	Value
 Project Cost	€300,000
@@ -68,7 +68,7 @@ ROI	~12% gross annually (if 1 SUNX = €10)
 
 ⸻
 
-🔧 Infrastructure Stack
+Infrastructure Stack
 
 Function	Tool / Platform
 Token issuance	XRPL Issued Currency
@@ -82,31 +82,20 @@ Legal anchoring	Off-chain contract (PDF or digital doc) linking token to real-wo
 
 ⸻
 
-🧩 SUNX Token Utility
-	•	💸 Receive monthly or quarterly energy revenue (in XRP or stablecoin)
-	•	🗳️ Governance: vote on reinvestment, upgrades, or new projects
-	•	🌱 Access to future Sunwatt initiatives (whitelisting, bonus yield)
-	•	🔁 Trade SUNX tokens on XRPL’s decentralized exchange
-	•	🎖️ Digital green ownership badge (traceable & verifiable)
+SUNX Token Utility
+	•	Receive monthly or quarterly energy revenue (in XRP or stablecoin)
+	•	Governance: vote on reinvestment, upgrades, or new projects
+	•	Access to future Sunwatt initiatives (whitelisting, bonus yield)
+	•	Trade SUNX tokens on XRPL’s decentralized exchange
+	•	Digital green ownership badge (traceable & verifiable)
 
 ⸻
 
-📈 Why SUNX Works
+Why SUNX Works
 
 Benefit	Explanation
-✅ Passive income	Direct share in electricity sales
-✅ Real asset backing	Linked to physical solar projects
-✅ Transparent	Ownership & payments are fully traceable
-✅ Simple & scalable	Easy onboarding, fast payments via XRPL
-✅ Eco-friendly & inclusive	Supports the energy transition & citizen participation
-
-
-
-⸻
-
-🎤 Pitch (1-minute version)
-
-Sunwatt is a platform that allows citizens to invest in real solar infrastructure.
-In return, they receive SUNX, a token that represents ownership in a solar project.
-All electricity is sold to the national grid, and revenues are automatically distributed in XRP.
-SUNX is both a green financial asset and a digital certificate of ownership, empowering people to earn passive income while accelerating the energy transition.
+Passive income	Direct share in electricity sales
+Real asset backing	Linked to physical solar projects
+Transparent	Ownership & payments are fully traceable
+Simple & scalable	Easy onboarding, fast payments via XRPL
+Eco-friendly & inclusive	Supports the energy transition & citizen participation
