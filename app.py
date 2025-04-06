@@ -6,7 +6,7 @@ import requests
 import os
 
 # Base URL for your Flask backend (adjust port if necessary)
-BASE_URL = "http://localhost:5001"
+BASE_URL = "http://localhost:5000"
 
 # Set the page configuration
 st.set_page_config(
@@ -222,11 +222,12 @@ if selected_group == "API Demo":
         project_description = st.text_area("Project Description")
         location = st.text_input("Location")
         power = st.number_input("Power plant capacity (kW)", min_value=50, max_value=None, value="min")
+        share_price_xrp =  st.number_input("Share Price XRP", max_value=1.0, value=0.05)
         investment = st.number_input("Project Investment ($)", min_value=100000, max_value=None, value="min")
-        number_of_shares = st.number_input("Number of Shares", min_value=10000,value="min")
+        number_of_shares = st.number_input("Number of Shares", min_value=200,value="min")
         xrp_price = st.number_input("XRP/USD", value=2.08, disabled=True )
         xrp_amount  = st.number_input("XRP amount", value=(investment//xrp_price)+1, disabled=True)
-        share_price_xrp =  st.number_input("Share Price XRP", value=(xrp_amount / number_of_shares), disabled=True)
+        
 
         if st.button("Create Project"):
             project_data = {
@@ -242,70 +243,70 @@ if selected_group == "API Demo":
             st.json(response.json())
             if response.status_code == 200:
                 project_id = response.json().get("project_id")
-                st.success(f"Project created with ID: {project_id}")
+                st.success(f"Project created")
                 st.session_state["project_id"] = project_id
     
     with demo_tabs[1]:
         st.subheader("2. Get Project Details")
         # Input for Project ID
-    project_id_input = st.text_input("Enter Project ID", value=st.session_state.get("project_id", ""), key="get_project")
+        project_id_input = st.text_input("Enter Project Name", value=st.session_state.get("name", ""), key="get_project")
     
-    # Button to fetch project details
-    if st.button("Get Project Details", key="get_project_button") and project_id_input:
-        response = requests.get(f"{BASE_URL}/project/{project_id_input}")
+        # Button to fetch project details
+        if st.button("Get Project Details", key="get_project_button") and project_id_input:
+            response = requests.get(f"{BASE_URL}/project/{project_id_input}")
+            
+            # Display the response code
+            st.write("Response Code:", response.status_code)
         
-        # Display the response code
-        st.write("Response Code:", response.status_code)
-        
-        # Only proceed if the response is successful
-        if response.status_code == 200:
-            project_data = response.json() 
-            
-            # Display Project Information
-            st.markdown("### Project Information")
-            st.markdown(f"**Project Name:** {project_data['project']['name']}")
-            st.markdown(f"**Location:** {project_data['project']['location']}")
-            st.markdown(f"**Description:** {project_data['project']['description']}")
-            st.markdown(f"**Created At:** {project_data['project']['created_at']}")
-            st.markdown(f"**Current Balance (XRP):** {project_data['project']['current_balance_xrp']}")
-            st.markdown(f"**Status:** {project_data['project']['status']}")
-            st.markdown(f"**Share Price (XRP):** {project_data['project']['share_price_xrp']}")
-            st.markdown(f"**Total Power (kW):** {project_data['project']['total_power_kw']}")
-            st.markdown(f"**Total Shares:** {project_data['project']['total_shares']}")
-            st.markdown(f"**Wallet Address:** {project_data['project']['wallet_address']}")
-            
-            # Display Dividends
-            st.markdown("### Dividends")
-            if project_data["dividends"]:
-                for dividend in project_data["dividends"]:
-                    st.markdown(f"**Amount (XRP):** {dividend['amount_xrp']}")
-                    st.markdown(f"**Distribution Date:** {dividend['distribution_date']}")
-                    st.markdown(f"**ID:** {dividend['id']}")
-                    st.markdown(f"**Status:** {dividend['status']}")
-                    st.markdown("---")
+            # Only proceed if the response is successful
+            if response.status_code == 200:
+                project_data = response.json() 
+                
+                # Display Project Information
+                st.markdown("### Project Information")
+                st.markdown(f"**Project Name:** {project_data['project']['name']}")
+                st.markdown(f"**Location:** {project_data['project']['location']}")
+                st.markdown(f"**Description:** {project_data['project']['description']}")
+                st.markdown(f"**Created At:** {project_data['project']['created_at']}")
+                st.markdown(f"**Current Balance (XRP):** {project_data['project']['current_balance_xrp']}")
+                st.markdown(f"**Status:** {project_data['project']['status']}")
+                st.markdown(f"**Share Price (XRP):** {project_data['project']['share_price_xrp']}")
+                st.markdown(f"**Total Power (kW):** {project_data['project']['total_power_kw']}")
+                st.markdown(f"**Total Shares:** {project_data['project']['total_shares']}")
+                st.markdown(f"**Wallet Address:** {project_data['project']['wallet_address']}")
+                
+                # Display Dividends
+                st.markdown("### Dividends")
+                if project_data["dividends"]:
+                    for dividend in project_data["dividends"]:
+                        st.markdown(f"**Amount (XRP):** {dividend['amount_xrp']}")
+                        st.markdown(f"**Distribution Date:** {dividend['distribution_date']}")
+                        st.markdown(f"**ID:** {dividend['id']}")
+                        st.markdown(f"**Status:** {dividend['status']}")
+                        st.markdown("---")
+                else:
+                    st.markdown("No dividends available.")
+                
+                # Display Shareholders
+                st.markdown("### Shareholders")
+                if project_data["shareholders"]:
+                    for shareholder in project_data["shareholders"]:
+                        st.markdown(f"**Holder Address:** {shareholder['holder_address']}")
+                        st.markdown(f"**Purchase Date:** {shareholder['purchase_date']}")
+                        st.markdown(f"**Shares Amount:** {shareholder['shares_amount']}")
+                        st.markdown("---")
+                else:
+                    st.markdown("No shareholders available.")
             else:
-                st.markdown("No dividends available.")
-            
-            # Display Shareholders
-            st.markdown("### Shareholders")
-            if project_data["shareholders"]:
-                for shareholder in project_data["shareholders"]:
-                    st.markdown(f"**Holder Address:** {shareholder['holder_address']}")
-                    st.markdown(f"**Purchase Date:** {shareholder['purchase_date']}")
-                    st.markdown(f"**Shares Amount:** {shareholder['shares_amount']}")
-                    st.markdown("---")
-            else:
-                st.markdown("No shareholders available.")
-        else:
-            st.markdown(f"Failed to fetch project details. Status Code: {response.status_code}")
+                st.markdown(f"Failed to fetch project details. Status Code: {response.status_code}")
 
     with demo_tabs[2]:
         st.subheader("3. Buy Shares")
-        project_id_buy = st.text_input("Project ID for Buying Shares", value=st.session_state.get("project_id", ""), key="buy_project")
+        project_id_buy = st.text_input("Project Name for Buying Shares", value=st.session_state.get("name", ""), key="buy_project")
         shares_amount = st.number_input("Enter number of shares to buy:", min_value=1, step=1, key="shares_amount")
         if st.button("Buy Shares", key="buy_shares_button") and project_id_buy:
             buy_data = {
-                "project_id": project_id_buy,
+                "name": project_id_buy,
                 "shares_amount": shares_amount
             }
             response = requests.post(f"{BASE_URL}/buy_shares", json=buy_data)
@@ -314,11 +315,11 @@ if selected_group == "API Demo":
 
     with demo_tabs[3]:
         st.subheader("4. Distribute Dividends")
-        project_id_div = st.text_input("Project ID for Dividend Distribution", value=st.session_state.get("project_id", ""), key="dividend_project")
+        project_id_div = st.text_input("Project Name for Dividend Distribution", value=st.session_state.get("name", ""), key="dividend_project")
         dividend_amount = st.number_input("Enter total dividend amount in XRP:", value=0.000001, format="%.6f", key="dividend_amount")
         if st.button("Distribute Dividends", key="dividends_button") and project_id_div:
             dividend_data = {
-                "project_id": project_id_div,
+                "name": project_id_div,
                 "total_dividend_xrp": dividend_amount
             }
             response = requests.post(f"{BASE_URL}/distribute_dividends", json=dividend_data)

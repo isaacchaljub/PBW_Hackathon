@@ -86,8 +86,7 @@ def init_db():
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS projects (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
+            name TEXT PRIMARY KEY,
             description TEXT,
             location TEXT,
             total_power_kw REAL,
@@ -102,21 +101,21 @@ def init_db():
     c.execute('''
         CREATE TABLE IF NOT EXISTS shareholders (
             id TEXT PRIMARY KEY,
-            project_id TEXT,
+            project_name TEXT,
             holder_wallet_address TEXT,
             shares_amount INTEGER,
             purchase_date TIMESTAMP,
-            FOREIGN KEY (project_id) REFERENCES projects (id)
+            FOREIGN KEY (project_name) REFERENCES projects (name)
         )
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS dividends (
             id TEXT PRIMARY KEY,
-            project_id TEXT,
+            project_name TEXT,
             amount_xrp REAL,
             distribution_date TIMESTAMP,
             status TEXT,
-            FOREIGN KEY (project_id) REFERENCES projects (id)
+            FOREIGN KEY (project_name) REFERENCES projects (name)
         )
     ''')
     conn.commit()
@@ -130,7 +129,6 @@ def create_project():
     """Create a new solar plant project and its dedicated wallet"""
     try:
         data = request.get_json(force=True)
-        project_id = str(uuid.uuid4())
         # For testing, enforce a low share price so that faucet-funded wallets have enough funds.
         if data.get('share_price_xrp', 0) > 1:
             return jsonify({"error": "Share price too high for testing. Please use 1 XRP or less per share."}), 400
@@ -144,12 +142,11 @@ def create_project():
         c = conn.cursor()
         c.execute('''
             INSERT INTO projects (
-                id, name, description, location, total_power_kw,
+                name, description, location, total_power_kw,
                 total_shares, share_price_xrp, wallet_address,
                 wallet_seed, status, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
-            project_id,
             data['name'],
             data['description'],
             data['location'],
@@ -165,7 +162,7 @@ def create_project():
         conn.close()
         
         return jsonify({
-            "project_id": project_id,
+            "name": data['name'],
             "wallet_address": project_wallet.classic_address,
             "share_price_xrp": data['share_price_xrp'],
             "total_shares": data['total_shares'],
@@ -181,36 +178,40 @@ def buy_shares():
     """Purchase shares in a project using XRP from a newly created buyer wallet"""
     try:
         data = request.get_json(force=True)
-        project_id = data['project_id']
+        project_name = data['name']
         shares_amount = int(data['shares_amount'])
         
         conn = sqlite3.connect('solar_crowdfunding.db')
         c = conn.cursor()
-        c.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
+        c.execute('SELECT * FROM projects WHERE name = ?', (project_name,))
         project = c.fetchone()
         if not project:
             return jsonify({"error": "Project not found"}), 404
         
-        # Calculate total XRP needed based on share price.
-        xrp_amount = shares_amount * project[6]  # share_price_xrp from db
-        drops_amount = int(xrp_amount * 1000000)  # XRP -> drops conversion
+        # Calculate total XRP needed based on share price
+        share_price_xrp = project[5]  # share_price_xrp from db
+        total_xrp = shares_amount * share_price_xrp
         
         buyer_wallet = create_funded_wallet()
         print(f"Created buyer wallet: {buyer_wallet.classic_address}")
         buyer_balance = check_wallet_balance(buyer_wallet.classic_address)
-        if buyer_balance < xrp_amount:
+        if buyer_balance < total_xrp:
             return jsonify({
-                "error": f"Insufficient funds. Need {xrp_amount} XRP but wallet only has {buyer_balance} XRP",
+                "error": f"Insufficient funds. Need {total_xrp:.2f} XRP but wallet only has {buyer_balance:.2f} XRP",
                 "buyer_address": buyer_wallet.classic_address,
                 "buyer_seed": buyer_wallet.seed
             }), 400
         
+        # Convert to drops for the actual payment
+        drops_amount = str(int(total_xrp * 1000000))  # XRP -> drops conversion
+        
         payment = Payment(
             account=buyer_wallet.classic_address,
-            destination=project[7],  # project wallet address
-            amount=str(drops_amount)
+            destination=project[6],  # project wallet address
+            amount=drops_amount
         )
-        # NOTE: Corrected parameter order: client first, then buyer_wallet.
+        
+        ensure_client()  # Make sure we have a client
         payment_prepared = autofill_and_sign(payment, client, buyer_wallet)
         payment_result = submit_and_wait(payment_prepared, client)
         if payment_result.result.get('meta', {}).get('TransactionResult') != 'tesSUCCESS':
@@ -218,12 +219,12 @@ def buy_shares():
         
         c.execute('''
             INSERT INTO shareholders (
-                id, project_id, holder_wallet_address,
+                id, project_name, holder_wallet_address,
                 shares_amount, purchase_date
             ) VALUES (?, ?, ?, ?, ?)
         ''', (
             str(uuid.uuid4()),
-            project_id,
+            project_name,
             buyer_wallet.classic_address,
             shares_amount,
             datetime.now()
@@ -232,13 +233,13 @@ def buy_shares():
         conn.close()
         
         buyer_final_balance = check_wallet_balance(buyer_wallet.classic_address)
-        project_final_balance = check_wallet_balance(project[7])
+        project_final_balance = check_wallet_balance(project[6])
         
         return jsonify({
             "buyer_address": buyer_wallet.classic_address,
             "buyer_seed": buyer_wallet.seed,
             "shares_amount": shares_amount,
-            "xrp_paid": xrp_amount,
+            "xrp_paid": total_xrp,
             "buyer_balance": buyer_final_balance,
             "project_balance": project_final_balance,
             "payment_result": payment_result.result
@@ -253,23 +254,23 @@ def distribute_dividends():
     """Distribute dividends from the project wallet to its shareholders"""
     try:
         data = request.get_json(force=True)
-        project_id = data['project_id']
+        project_name = data['name']
         total_dividend_xrp = float(data['total_dividend_xrp'])
         
         conn = sqlite3.connect('solar_crowdfunding.db')
         c = conn.cursor()
-        c.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
+        c.execute('SELECT * FROM projects WHERE name = ?', (project_name,))
         project = c.fetchone()
         if not project:
             return jsonify({"error": "Project not found"}), 404
         
-        project_balance = check_wallet_balance(project[7])
+        project_balance = check_wallet_balance(project[6])
         if project_balance < total_dividend_xrp:
             return jsonify({
                 "error": f"Insufficient funds in project wallet. Need {total_dividend_xrp} XRP but wallet only has {project_balance} XRP"
             }), 400
         
-        c.execute('SELECT * FROM shareholders WHERE project_id = ?', (project_id,))
+        c.execute('SELECT * FROM shareholders WHERE project_name = ?', (project_name,))
         holders = c.fetchall()
         if not holders:
             return jsonify({"error": "No shareholders found for this project"}), 400
@@ -278,19 +279,19 @@ def distribute_dividends():
         dividend_id = str(uuid.uuid4())
         c.execute('''
             INSERT INTO dividends (
-                id, project_id, amount_xrp,
+                id, project_name, amount_xrp,
                 distribution_date, status
             ) VALUES (?, ?, ?, ?, ?)
         ''', (
             dividend_id,
-            project_id,
+            project_name,
             total_dividend_xrp,
             datetime.now(),
             'PROCESSING'
         ))
         
         # Recover project wallet from stored seed
-        project_wallet = Wallet.from_seed(project[8])
+        project_wallet = Wallet.from_seed(project[7])
         distributions = []
         for holder in holders:
             holder_share = (holder[3] / total_shares) * total_dividend_xrp
@@ -315,7 +316,7 @@ def distribute_dividends():
         conn.commit()
         conn.close()
         
-        final_balance = check_wallet_balance(project[7])
+        final_balance = check_wallet_balance(project[6])
         return jsonify({
             "dividend_id": dividend_id,
             "distributions": distributions,
@@ -326,36 +327,35 @@ def distribute_dividends():
         print(f"Error in distribute_dividends: {e}")
         return jsonify({"error": str(e)}), 500
 
-@app.route("/project/<project_id>", methods=["GET"])
-def get_project(project_id):
+@app.route("/project/<project_name>", methods=["GET"])
+def get_project(project_name):
     """Retrieve project details including shareholders and dividend history"""
     try:
         conn = sqlite3.connect('solar_crowdfunding.db')
         c = conn.cursor()
-        c.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
+        c.execute('SELECT * FROM projects WHERE name = ?', (project_name,))
         project = c.fetchone()
         if not project:
             return jsonify({"error": "Project not found"}), 404
         
-        project_balance = check_wallet_balance(project[7])
-        c.execute('SELECT * FROM shareholders WHERE project_id = ?', (project_id,))
+        project_balance = check_wallet_balance(project[6])
+        c.execute('SELECT * FROM shareholders WHERE project_name = ?', (project_name,))
         holders = c.fetchall()
-        c.execute('SELECT * FROM dividends WHERE project_id = ?', (project_id,))
+        c.execute('SELECT * FROM dividends WHERE project_name = ?', (project_name,))
         dividends = c.fetchall()
         conn.close()
         
         return jsonify({
             "project": {
-                "id": project[0],
-                "name": project[1],
-                "description": project[2],
-                "location": project[3],
-                "total_power_kw": project[4],
-                "total_shares": project[5],
-                "share_price_xrp": project[6],
-                "wallet_address": project[7],
-                "status": project[9],
-                "created_at": project[10],
+                "name": project[0],
+                "description": project[1],
+                "location": project[2],
+                "total_power_kw": project[3],
+                "total_shares": project[4],
+                "share_price_xrp": project[5],
+                "wallet_address": project[6],
+                "status": project[8],
+                "created_at": project[9],
                 "current_balance_xrp": project_balance
             },
             "shareholders": [{
@@ -373,6 +373,64 @@ def get_project(project_id):
         
     except Exception as e:
         print(f"Error in get_project: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/get_all_project_info", methods=["GET"])
+def get_all_project_info():
+    """
+    Retrieve all information about projects, shareholders, and dividends from the database.
+    Returns a dictionary with all the information.
+    """
+    try:
+        conn = sqlite3.connect('solar_crowdfunding.db')
+        c = conn.cursor()
+        
+        # Get all projects
+        c.execute('''
+            SELECT * FROM projects
+        ''')
+        projects = []
+        for row in c.fetchall():
+            project = {
+                "name": row[0],
+                "description": row[1],
+                "location": row[2],
+                "total_power_kw": row[3],
+                "total_shares": row[4],
+                "share_price_xrp": row[5],
+                "wallet_address": row[6],
+                "status": row[8],
+                "created_at": row[9]
+            }
+            
+            # Get shareholders for this project
+            c.execute('SELECT * FROM shareholders WHERE project_name = ?', (row[0],))
+            shareholders = [{
+                "holder_address": holder[2],
+                "shares_amount": holder[3],
+                "purchase_date": holder[4]
+            } for holder in c.fetchall()]
+            project["shareholders"] = shareholders
+            
+            # Get dividends for this project
+            c.execute('SELECT * FROM dividends WHERE project_name = ?', (row[0],))
+            dividends = [{
+                "id": div[0],
+                "amount_xrp": div[2],
+                "distribution_date": div[3],
+                "status": div[4]
+            } for div in c.fetchall()]
+            project["dividends"] = dividends
+            
+            projects.append(project)
+        
+        conn.close()
+        return jsonify({"projects": projects}), 200
+        
+    except Exception as e:
+        print(f"Error in get_all_project_info: {e}")
+        if 'conn' in locals():
+            conn.close()
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
