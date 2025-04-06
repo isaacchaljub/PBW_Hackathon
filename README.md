@@ -1,8 +1,13 @@
 # PBW_Hackathon
 **Sunwatt – Tokenized Solar Projects Powered by SUNX**
+------ 
 
+**How to test the app**
+1. Create a python environment (Conda, venv) and install the `requirements.txt`
+2. Run the Flask app: `python solar_crowdfunding.py`
+3. Once running, run the Streamlit app: `streamlit run app.py`
 
-⸻
+------
 
 **Overview**
 
@@ -10,8 +15,7 @@
 - Citizens and investors fund solar installations and receive SUNX tokens in return.
 - Each SUNX token represents a fractional share in one or more Sunwatt solar projects and gives access to ongoing revenue from the sale of electricity to the national power grid.
 
-
-⸻
+------
 
 **The SUNX Token**
 
@@ -26,10 +30,7 @@
 |Utility	Digital proof of ownership + share in revenue|
 
 
-
-
-⸻
-
+------
 **Revenue & Distribution Model**
 
 How it works:
@@ -43,7 +44,7 @@ Example:
 €1,000 in revenue → converted → 1,300 XRP → distributed among holders.
 
 
-⸻
+------
 
 **Ownership and Transparency**
 - SUNX tokens act as on-chain certificates of ownership.
@@ -55,7 +56,7 @@ Example:
   - Can be tracked through a public explorer or custom dashboard.
 
 
-⸻
+------
 
 **Example Project Breakdown**
 
@@ -70,7 +71,7 @@ Example:
 |Earnings per Token|	~€1.20 / year|
 |ROI |	~12% gross annually (if 1 SUNX = €10)|
 
-⸻
+------
 
 **Infrastructure Stack**
 
@@ -83,7 +84,7 @@ Example:
 |User interface|	Web dashboard (wallet, yield, production)|
 |Legal anchoring|	Off-chain contract (PDF or digital doc) linking token to real-world rights|
 
-⸻
+------
 
 **SUNX Token Utility**
 	•	Receive monthly or quarterly energy revenue (in XRP or stablecoin)
@@ -92,13 +93,13 @@ Example:
 	•	Trade SUNX tokens on XRPL’s decentralized exchange
 	•	Digital green ownership badge (traceable & verifiable)
 
-⸻
+------
 
 **Why SUNX Works**
 
-Benefit	Explanation
-Passive income	Direct share in electricity sales
-Real asset backing	Linked to physical solar projects
-Transparent	Ownership & payments are fully traceable
-Simple & scalable	Easy onboarding, fast payments via XRPL
-Eco-friendly & inclusive	Supports the energy transition & citizen participation
+Benefit	Explanation: 
+- Passive income	Direct share in electricity sales
+- Real asset backing	Linked to physical solar projects
+- Transparent	Ownership & payments are fully traceable
+- Simple & scalable	Easy onboarding, fast payments via XRPL
+- Eco-friendly & inclusive	Supports the energy transition & citizen participation

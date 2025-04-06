@@ -3,14 +3,15 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import requests
+import os
 
 # Base URL for your Flask backend (adjust port if necessary)
 BASE_URL = "http://localhost:5001"
 
-# Set the page configuration (only one call needed)
+# Set the page configuration
 st.set_page_config(
     page_title="Solar Farm Crowdfunding with XRP Blockchain",
-    page_icon="🌞",
+    page_icon="",
     layout="wide"
 )
 
@@ -48,13 +49,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Sidebar Navigation: Define groups for static content and API interactions.
+# Sidebar Navigation
 section_groups = {
     "Home & About": ["Home", "About the Project"],
     "How It Works": ["How It Works"],
-    "Calculator & Features": ["Contribution Calculator", "Key Features & Benefits"],
-    "Impact & Involvement": ["Impact", "Get Involved"],
-    "API Demo": ["Create Project", "Get Project Details", "Buy Shares", "Distribute Dividends"],
+    "API Demo": ["API Demo"],
     "Contact": ["Contact"]
 }
 
@@ -68,7 +67,7 @@ if selected_group in ["Home & About", "How It Works", "Calculator & Features", "
         st.markdown(
             """
             <div class="header">
-                <h1>🌞 Solar Farm Crowdfunding with XRP Blockchain 🌞</h1>
+                <h1>Solar Farm Crowdfunding with XRP Blockchain</h1>
                 <p>Empowering communities through renewable energy and blockchain technology.</p>
             </div>
             """,
@@ -83,25 +82,50 @@ if selected_group in ["Home & About", "How It Works", "Calculator & Features", "
                 <a href="#learn-more" style="text-decoration: none;">
                     <button class="button-custom" style="background-color: #32CD32;">Learn More</button>
                 </a>
-            </div>
+            </div> 
             """,
             unsafe_allow_html=True
         )
-        # Add an interactive funding progress chart (static demo data)
+
+        # Funding chart
         st.markdown("### Funding Progress Over Time")
         dates = pd.date_range(start="2025-01-01", periods=30)
         funds = np.cumsum(np.random.randint(10, 100, size=30))
         progress_data = pd.DataFrame({"Date": dates, "Funds Raised (XRP)": funds})
         fig = px.line(progress_data, x="Date", y="Funds Raised (XRP)", title="Cumulative Funds Raised")
         st.plotly_chart(fig, use_container_width=True)
-        # Reactive slider for simulation
+
+        # Project carousel
+        st.markdown("### Featured Projects")
+
+        # Specify the path to your local images directory
+        image_directory = "images"  # Replace with your image directory path
+
+        # Get the list of image files in the directory
+        image_files = [f for f in os.listdir(image_directory) if f.endswith(('png', 'jpg', 'jpeg', 'gif'))]
+
+        # Create a 1x3 grid using columns
+        col1, col2, col3 = st.columns(3)
+
+        # Ensure we don't try to access more than 3 images
+        for idx, image_file in enumerate(image_files[:3]):
+            image_path = os.path.join(image_directory, image_file)
+            if idx == 0:
+                col1.image(image_path, caption="Desert Sun Solar Plant", width=300)
+            elif idx == 1:
+                col2.image(image_path, caption="Mountain Peak Project", width=300)
+            elif idx == 2:
+                col3.image(image_path, caption="Ocean Breez Project", width=300)
+
+
+        # Simulate funding
         st.markdown("#### Simulate Future Funding")
         additional_funds = st.slider("Projected additional XRP contribution:", 0, 1000, 200)
         future_total = funds[-1] + additional_funds
-        st.write(f"Projected Total Funds Raised: **{future_total} XRP**")
-
+        st.write(f"Projected Total Funds Raised: *{future_total} XRP*")
+    
     if "About the Project" in selected_sections:
-        st.header("🌍 About the Project")
+        st.header("About the Project")
         st.markdown(
             """
             Join our mission to create a solar farm funded by blockchain-powered contributions. 
@@ -110,159 +134,197 @@ if selected_group in ["Home & About", "How It Works", "Calculator & Features", "
         )
         st.markdown(
             """
-            **Ownership Model**  
+            *Ownership Model*  
             By contributing, you gain ownership in the solar farm through SUNWATT tokens, representing your share in the renewable energy generated.
 
-            **Energy Generation**  
+            *Energy Generation*  
             As the solar farm generates energy, real-time tracking displays performance on our dashboard, ensuring transparency and accountability.
             """
         )
-
+    
     if "How It Works" in selected_sections:
-        st.header("📖 How It Works")
-        st.markdown(
-            """
-            **Step 1: Join the Community**  
-            - **Sign Up:** Become a member of our renewable energy cooperative.  
-            - **Invest:** Make your initial contribution to get started.  
-            - **Receive Tokens:** Earn SUNWATT tokens representing your share in the solar farm.
+        st.header("How It Works")
+        
+        with st.expander("Step 1: Join the Community"):
+            col1, col2 = st.columns([2, 1]) 
 
-            **Step 2: Contribute to the Solar Farm**  
-            - **Fund Installation:** Contribute XRP to help fund the solar farm.  
-            - **Tokenization:** Your contribution is converted into SUNWATT tokens on the XRP Blockchain.  
-            - **Efficient Transactions:** Enjoy fast and low-cost transactions.
+            with col1:
+                st.markdown(
+                    """
+                    - *Sign Up:* Become a member of our renewable energy cooperative.  
+                    - *Invest:* Make your initial contribution to get started.  
+                    - *Receive Tokens:* Earn SUNWATT tokens representing your share in the solar farm.
+                    """
+                )
 
-            **Step 3: Track Energy Generation**  
-            - **Real-Time Monitoring:** Check the dashboard to see the solar farm's energy production.  
-            - **Transparent Data:** All data is recorded on the blockchain for accountability.  
-            - **Token Value Growth:** Watch your token value increase as more clean energy is generated.
+            with col2:
+                st.image("images/Project_1.jpg", width=1000) 
 
-            **Step 4: Save on Your Bills**  
-            - **Energy Savings:** Use the energy generated to reduce your electricity bills.  
-            - **Earn Rewards:** Benefit from dividends or additional token rewards as the project scales.  
-            - **Join the Revolution:** Be part of a movement toward greener, more affordable energy.
-            """
-        )
-        with st.expander("More Details"):
-            st.markdown("Additional FAQs or technical details can be provided here.")
+            
+        
+        with st.expander("Step 2: Contribute to the Solar Farm"):
+            col1, col2 = st.columns([2, 1]) 
 
-    if "Contribution Calculator" in selected_sections:
-        st.header("💸 Contribution Calculator")
-        st.markdown("Discover how many SUNWATT tokens you can earn with your contribution.")
-        xrp_amount = st.number_input("Enter your contribution amount in XRP:", min_value=0.0, step=0.1)
-        tokens = xrp_amount * 10  # Example conversion rate
-        st.write(f"With {xrp_amount} XRP, you'll receive approximately **{tokens:.2f} SUNWATT tokens**.")
+            with col1:
+                st.markdown(
+                    """
+                    - *Fund Installation:* Contribute XRP to help fund the solar farm.  
+                    - *Tokenization:* Your contribution is converted into SUNWATT tokens on the XRP Blockchain.  
+                    - *Efficient Transactions:* Enjoy fast and low-cost transactions.
+                    """
+                )
+            with col2:
+                st.image("images/Project_2.jpg", width=1000) 
 
-    if "Key Features & Benefits" in selected_sections:
-        st.header("✨ Key Features & Benefits")
-        st.markdown(
-            """
-            - **XRP Blockchain:** Fast and low-cost transactions.
-            - **Tokenized Energy:** Trackable rewards with SUNWATT tokens.
-            - **Escrow Mechanism:** Ensures milestone-based accountability.
-            - **Community Governance:** Contributors have voting power for future decisions.
-            """
-        )
-        st.markdown(
-            """
-            **Environmental Impact:**  
-            - Contribute to reducing carbon emissions by funding solar energy projects.  
-            - Increase the adoption of renewable energy in communities worldwide.
-            """
-        )
+        with st.expander("Step 3: Track Energy Generation"):
+            col1, col2 = st.columns([2, 1]) 
 
-    if "Impact" in selected_sections:
-        st.header("🌟 Impact")
-        col1, col2, col3 = st.columns(3)
-        col1.metric("CO2 Saved", "12,500 kg")
-        col2.metric("Energy Generated", "50,000 kWh")
-        col3.metric("Contributors", "200+")
-        st.markdown(
-            """
-            Our solar farm project empowers communities to embrace renewable energy while delivering tangible environmental and economic benefits.
-            """
-        )
-
-    if "Get Involved" in selected_sections:
-        st.header("🔗 Get Involved")
-        st.markdown(
-            """
-            Ready to make a difference? Join our community and take part in shaping the future of renewable energy.
-            - **Own Solar Farm Shares:** Receive SUNWATT tokens and be part of the renewable energy revolution.
-            - **Track Progress:** Use our real-time dashboard to follow project milestones and energy generation.
-            """
-        )
-        if st.button("Contribute Now"):
-            st.write("Thank you for your contribution! Your support makes a difference.")
-
+            with col1:
+                st.markdown(
+                    """
+                    - *Real-Time Monitoring:* Check the dashboard to see the solar farm's energy production.  
+                    - *Transparent Data:* All data is recorded on the blockchain for accountability.  
+                    - *Token Value Growth:* Watch your token value increase as more clean energy is generated.
+                    """
+                )
+            with col2:
+                st.image("images/Project_3.jpg", width=1000) 
+        
+        with st.expander("Step 4: Earn Passive Income"):
+            col1, col2 = st.columns([2, 1]) 
+            with col1:
+                st.markdown(
+                    """
+                    - *Passive Revenue Stream:* Earn a consistent, passive income by holding your shares in the solar project.
+                    - *Token Appreciation:* Benefit from the increasing value of your SUNWATT tokens as the project scales.  
+                
+                    """
+                )
+            with col2:
+                st.image("images/Project_4.jpg", width=1000) 
+    
+    
     if "Contact" in selected_sections:
-        st.header("📧 Contact Us")
-        st.markdown(
-            """
-            Have questions or want to reach out? Contact us at **support@solarfarm.com**.
-            """
-        )
+        st.header("Contact Us")
+        st.markdown("Have questions or want to reach out? Contact us at *support@solarfarm.com*.")
 
 # ---------------------- API Demo Section ----------------------
 if selected_group == "API Demo":
     st.header("API Demo: Interact with the Solar Crowdfunding Backend")
-    st.markdown("""
-    Use the controls below to create a project, buy shares, get project details, and distribute dividends.
-    """)
+    st.markdown("Use the carousel below to navigate through the API demo sections.")
     
-    # Create Project
-    st.subheader("1. Create a Solar Project")
-    if st.button("Create Demo Project"):
-        project_data = {
-            "name": "Desert Sun Power Plant",
-            "description": "20MW solar plant in Arizona desert",
-            "location": "Phoenix, AZ",
-            "total_power_kw": 20000,
-            "total_shares": 1000,
-            "share_price_xrp": 0.000001  # very low for testing
-        }
-        response = requests.post(f"{BASE_URL}/create_project", json=project_data)
-        st.write("Response Code:", response.status_code)
-        st.json(response.json())
-        if response.status_code == 200:
-            project_id = response.json().get("project_id")
-            st.success(f"Project created with ID: {project_id}")
-            st.session_state["project_id"] = project_id
+    demo_tabs = st.tabs(["Create Project", "Get Project Details", "Buy Shares", "Distribute Dividends"])
+    
+    with demo_tabs[0]:
+        st.subheader("1. Create a Solar Project")
 
-    # Get Project Details
-    st.subheader("2. Get Project Details")
-    project_id_input = st.text_input("Enter Project ID", value=st.session_state.get("project_id", ""))
-    if st.button("Get Project Details") and project_id_input:
+        project_name = st.text_input("Project Name")
+        project_description = st.text_area("Project Description")
+        location = st.text_input("Location")
+        power = st.number_input("Power plant capacity (kW)", min_value=50, max_value=None, value="min")
+        investment = st.number_input("Project Investment ($)", min_value=100000, max_value=None, value="min")
+        number_of_shares = st.number_input("Number of Shares", min_value=10000,value="min")
+        xrp_price = st.number_input("XRP/USD", value=2.08, disabled=True )
+        xrp_amount  = st.number_input("XRP amount", value=(investment//xrp_price)+1, disabled=True)
+        share_price_xrp =  st.number_input("Share Price XRP", value=(xrp_amount / number_of_shares), disabled=True)
+
+        if st.button("Create Project"):
+            project_data = {
+                "name": project_name,
+                "description": project_description,
+                "location": location,
+                "total_power_kw": power,
+                "total_shares": number_of_shares,
+                "share_price_xrp": share_price_xrp
+            }
+            response = requests.post(f"{BASE_URL}/create_project", json=project_data)
+            st.write("Response Code:", response.status_code)
+            st.json(response.json())
+            if response.status_code == 200:
+                project_id = response.json().get("project_id")
+                st.success(f"Project created with ID: {project_id}")
+                st.session_state["project_id"] = project_id
+    
+    with demo_tabs[1]:
+        st.subheader("2. Get Project Details")
+        # Input for Project ID
+    project_id_input = st.text_input("Enter Project ID", value=st.session_state.get("project_id", ""), key="get_project")
+    
+    # Button to fetch project details
+    if st.button("Get Project Details", key="get_project_button") and project_id_input:
         response = requests.get(f"{BASE_URL}/project/{project_id_input}")
+        
+        # Display the response code
         st.write("Response Code:", response.status_code)
-        st.json(response.json())
+        
+        # Only proceed if the response is successful
+        if response.status_code == 200:
+            project_data = response.json() 
+            
+            # Display Project Information
+            st.markdown("### Project Information")
+            st.markdown(f"**Project Name:** {project_data['project']['name']}")
+            st.markdown(f"**Location:** {project_data['project']['location']}")
+            st.markdown(f"**Description:** {project_data['project']['description']}")
+            st.markdown(f"**Created At:** {project_data['project']['created_at']}")
+            st.markdown(f"**Current Balance (XRP):** {project_data['project']['current_balance_xrp']}")
+            st.markdown(f"**Status:** {project_data['project']['status']}")
+            st.markdown(f"**Share Price (XRP):** {project_data['project']['share_price_xrp']}")
+            st.markdown(f"**Total Power (kW):** {project_data['project']['total_power_kw']}")
+            st.markdown(f"**Total Shares:** {project_data['project']['total_shares']}")
+            st.markdown(f"**Wallet Address:** {project_data['project']['wallet_address']}")
+            
+            # Display Dividends
+            st.markdown("### Dividends")
+            if project_data["dividends"]:
+                for dividend in project_data["dividends"]:
+                    st.markdown(f"**Amount (XRP):** {dividend['amount_xrp']}")
+                    st.markdown(f"**Distribution Date:** {dividend['distribution_date']}")
+                    st.markdown(f"**ID:** {dividend['id']}")
+                    st.markdown(f"**Status:** {dividend['status']}")
+                    st.markdown("---")
+            else:
+                st.markdown("No dividends available.")
+            
+            # Display Shareholders
+            st.markdown("### Shareholders")
+            if project_data["shareholders"]:
+                for shareholder in project_data["shareholders"]:
+                    st.markdown(f"**Holder Address:** {shareholder['holder_address']}")
+                    st.markdown(f"**Purchase Date:** {shareholder['purchase_date']}")
+                    st.markdown(f"**Shares Amount:** {shareholder['shares_amount']}")
+                    st.markdown("---")
+            else:
+                st.markdown("No shareholders available.")
+        else:
+            st.markdown(f"Failed to fetch project details. Status Code: {response.status_code}")
 
-    # Buy Shares
-    st.subheader("3. Buy Shares")
-    project_id_buy = st.text_input("Project ID for Buying Shares", value=st.session_state.get("project_id", ""))
-    shares_amount = st.number_input("Enter number of shares to buy:", min_value=1, step=1)
-    if st.button("Buy Shares") and project_id_buy:
-        buy_data = {
-            "project_id": project_id_buy,
-            "shares_amount": shares_amount
-        }
-        response = requests.post(f"{BASE_URL}/buy_shares", json=buy_data)
-        st.write("Response Code:", response.status_code)
-        st.json(response.json())
+    with demo_tabs[2]:
+        st.subheader("3. Buy Shares")
+        project_id_buy = st.text_input("Project ID for Buying Shares", value=st.session_state.get("project_id", ""), key="buy_project")
+        shares_amount = st.number_input("Enter number of shares to buy:", min_value=1, step=1, key="shares_amount")
+        if st.button("Buy Shares", key="buy_shares_button") and project_id_buy:
+            buy_data = {
+                "project_id": project_id_buy,
+                "shares_amount": shares_amount
+            }
+            response = requests.post(f"{BASE_URL}/buy_shares", json=buy_data)
+            st.write("Response Code:", response.status_code)
+            st.json(response.json())
 
-    # Distribute Dividends
-    st.subheader("4. Distribute Dividends")
-    project_id_div = st.text_input("Project ID for Dividend Distribution", value=st.session_state.get("project_id", ""))
-    dividend_amount = st.number_input("Enter total dividend amount in XRP:", value=0.000001, format="%.6f")
-    if st.button("Distribute Dividends") and project_id_div:
-        dividend_data = {
-            "project_id": project_id_div,
-            "total_dividend_xrp": dividend_amount
-        }
-        response = requests.post(f"{BASE_URL}/distribute_dividends", json=dividend_data)
-        st.write("Response Code:", response.status_code)
-        st.json(response.json())
+    with demo_tabs[3]:
+        st.subheader("4. Distribute Dividends")
+        project_id_div = st.text_input("Project ID for Dividend Distribution", value=st.session_state.get("project_id", ""), key="dividend_project")
+        dividend_amount = st.number_input("Enter total dividend amount in XRP:", value=0.000001, format="%.6f", key="dividend_amount")
+        if st.button("Distribute Dividends", key="dividends_button") and project_id_div:
+            dividend_data = {
+                "project_id": project_id_div,
+                "total_dividend_xrp": dividend_amount
+            }
+            response = requests.post(f"{BASE_URL}/distribute_dividends", json=dividend_data)
+            st.write("Response Code:", response.status_code)
+            st.json(response.json())
 
 # ---------------------- Sidebar Footer ----------------------
 st.sidebar.markdown("---")
-st.sidebar.markdown("©️ 2025 Solar Farm Crowdfunding. All Rights Reserved.")
+st.sidebar.markdown("© 2025 Solar Farm Crowdfunding. All Rights Reserved.")
